@@ -28,15 +28,21 @@ class Email extends PHPMailer
 		$this->Username = $this->username;
 		$this->Password = $this->password;
 		$this->setFrom($this->username, $this->contato);
+		$this->AltBody = 'Seu email não oferece suporte ao email enviado';
 	}
 
 	public function enviar($data = array())
 	{
-		$this->addAddress($data['emailsend']);
+		if(is_array($data['emailsend'])){
+			foreach ($data['emailsend'] as $key => $value) {
+				$this->addAddress($value);
+			}
+		}else{
+			$this->addAddress($data['emailsend']);
+		}
 		$this->Subject = $data['subject'];
 		$this->msgHTML(file_get_contents($data['contents'].'.html'), __DIR__);
-		$this->AltBody = 'Seu email não oferece suporte ao email enviado';
-
+		
 		return $this->send();
 	}
 }
